@@ -121,5 +121,8 @@ def check_calendar(agent_id: AgentId, meeting_time_utc_start: datetime, meeting_
             # we cannot fit it into the calendar and return False.
             return False
 
-
+    # If we iterate through all of the events in the calendar without 
+    # finding an event that starts after the requested meeting ends,
+    # or an event that conflicts with the meeting time, we can conclude
+    # that the meeting time is available and return True.
     return True
