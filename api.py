@@ -23,30 +23,8 @@ def convert_to_serialiable_json(json: dict) -> dict:
         {key: value.isoformat() if isinstance(value, datetime) else value for key, value in json.items()}
     )
 
-class AgentId(str, Enum):
-    johndoe = "johndoe" 
-    janedoe = "janedoe"
 
-
-app = FastAPI()
-
-
-@app.get("/download-calendar/{agent_id}")
-def download_calendar(agent_id: AgentId):
-    ics_file_path = f"{agent_id.value}.ics"
-    logger.info(f"Path: {ics_file_path}")
-
-    if os.path.exists(ics_file_path):
-        return FileResponse(ics_file_path, media_type="text/calendar", filename="calendar.ics")
-    else:
-        raise HTTPException(status_code=404, detail="Calendar file not found")
-
-
-@app.get("/examine-calendar/{agent_id}")
-def examine_calendar(agent_id: AgentId):
-    ics_file_path = f"{agent_id.value}.ics"
-    logger.info(f"Path: {ics_file_path}")
-
+def parse_ics_file(ics_file_path: str) -> list:
     # Read and parse the .ics file
     with open(ics_file_path, "r") as ics_file:
         calendar = ics.Calendar(ics_file.read())
@@ -71,5 +49,37 @@ def examine_calendar(agent_id: AgentId):
         key=lambda x: (datetime.fromisoformat(str(x["Start Time"])), x["Event Name"])
     )
 
+    return events
+
+
+
+class AgentId(str, Enum):
+    johndoe = "johndoe" 
+    janedoe = "janedoe"
+
+
+app = FastAPI()
+
+
+@app.get("/download-calendar/{agent_id}")
+def download_calendar(agent_id: AgentId):
+    ics_file_path = f"{agent_id.value}.ics"
+    logger.info(f"Path: {ics_file_path}")
+
+    if os.path.exists(ics_file_path):
+        return FileResponse(ics_file_path, media_type="text/calendar", filename="calendar.ics")
+    else:
+        raise HTTPException(status_code=404, detail="Calendar file not found")
+
+
+@app.get("/examine-calendar/{agent_id}")
+def examine_calendar(agent_id: AgentId):
+    ics_file_path = f"{agent_id.value}.ics"
+    logger.info(f"Path: {ics_file_path}")
+
+    sorted_calendar_events = parse_ics_file(ics_file_path)
+
     # Return the sorted, serializable list as JSON
-    return JSONResponse(events)
+    return JSONResponse(sorted_calendar_events)
+
+
