@@ -118,7 +118,7 @@ async def check(agent_id: int, duration: int, time_range_start_datetime_in_defau
 
 
 @app.get("/multi-agent-coordination/{duration}/{time_range_start_datetime_in_default_tz}/{time_range_end_datetime_in_default_tz}")
-async def check(duration: int, time_range_start_datetime_in_default_tz: datetime, time_range_end_datetime_in_default_tz: datetime, agent_ids: Annotated[list[str] | None, Query()]):
+async def coordinate(duration: int, time_range_start_datetime_in_default_tz: datetime, time_range_end_datetime_in_default_tz: datetime, agent_ids: Annotated[list[str] | None, Query()]):
     # List to store our return value
     available_times = []
 
