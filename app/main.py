@@ -22,8 +22,8 @@ datastore = dict()
 app = FastAPI()
 
 
-@app.get("/query/{agent_id}/{duration}/{start_datetime_in_default_tz}")
-async def query(agent_id: int, duration: int, start_datetime_in_default_tz: datetime):
+@app.get("/check/{agent_id}/{duration}/{start_datetime_in_default_tz}")
+async def check(agent_id: int, duration: int, start_datetime_in_default_tz: datetime):
     try:
         requested_time = start_datetime_in_default_tz
 
