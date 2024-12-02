@@ -42,7 +42,7 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
             # 
             # Result - The agent is unavailable, so we'll store a value of 0 min duration
             if time_pointer.hour < BUSINESS_DAY_START or time_pointer.hour >= BUSINESS_DAY_END:
-                store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer.hour, time_pointer.minute) 
+                store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer) 
             else:
                 # Case 2: The next_calendar_event exists and has a begin datetime earlier than time_pointer
                 #         and there is another calendar event after next_calendar_event
@@ -66,7 +66,7 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                 ):
                     time_pointer_date_at_5_pm = time_pointer.replace(hour=17, minute=0, second=0, microsecond=0)
                     minutes_free = abs((time_pointer_date_at_5_pm - time_pointer).total_seconds() / 60)
-                    store_duration_for_hour_and_min(availability_by_agent_id[k], minutes_free, time_pointer.hour, time_pointer.minute)
+                    store_duration_for_hour_and_min(availability_by_agent_id[k], minutes_free, time_pointer)
                 
                 # Case 5: The next_calendar_event has a begin datetime equal to time_pointer in terms of date/hour/minute or
                 #         the prev_calendar_event is not None and overlaps with time_pointer
@@ -77,7 +77,7 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                 ) or (prev_calendar_event is not None and (
                     prev_calendar_event["end"].date() == time_pointer.date() and prev_calendar_event["begin"] < time_pointer and prev_calendar_event["end"] > time_pointer 
                 ))):
-                    store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer.hour, time_pointer.minute)
+                    store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer)
                     
 
                 # Case 6: The next_calendar_event has a begin datetime later than time_pointer, 
@@ -86,7 +86,7 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                 # Result: The agent is free for the number of minutes between now and next_calendar_event
                 elif next_calendar_event is not None and next_calendar_event["begin"] > time_pointer and next_calendar_event["begin"].date() == time_pointer.date():
                     minutes_free = abs((next_calendar_event["begin"] - time_pointer).total_seconds() / 60)
-                    store_duration_for_hour_and_min(availability_by_agent_id[k], minutes_free, time_pointer.hour, time_pointer.minute)
+                    store_duration_for_hour_and_min(availability_by_agent_id[k], minutes_free, time_pointer)
                     
             # Add a minute to the loop counter
             time_pointer += timedelta(minutes=1) 
@@ -123,13 +123,21 @@ def read_ics_file_and_sort_events(ics_file_path) -> List[Event]:
     return sorted_events
 
 
-def store_duration_for_hour_and_min(agent_availability, duration, hour, min):
-    if hour < 0 or hour > 23 or min < 0 or min > 59 or duration < 0:
+def store_duration_for_hour_and_min(agent_availability: Dict, duration: int, appointment_time: datetime):
+    if duration < 0 or agent_availability is None or appointment_time is None:
         raise ValueError("Invalid value for storage")
-    
+
+    appointment_date = appointment_time.date()
+    appointment_hour = appointment_time.hour
+    appointment_minute = appointment_time.minute
+
+    # Initialize date's Dict lazily
+    if appointment_date not in agent_availability:
+        agent_availability[appointment_date] = dict()
+
     # Initialize hour's Dict lazily
-    if hour not in agent_availability:
-        agent_availability[hour] = dict()
+    if appointment_hour not in agent_availability[appointment_date]:
+        agent_availability[appointment_date][appointment_hour] = dict()
 
     # Save the duration's value in the innermost Dict
-    agent_availability[hour][min] = duration
+    agent_availability[appointment_date][appointment_hour][appointment_minute] = duration

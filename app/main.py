@@ -30,14 +30,23 @@ async def check(agent_id: int, duration: int, start_datetime_in_default_tz: date
         # Preprocess ICS files for query
         datastore = preprocess_ics_files(CONFIG)
 
+        # Check for the agent's availability Dict
         if agent_id not in datastore:
             raise LookupError("Unable to find requested agent_id")
         
-        if requested_time.hour not in datastore[agent_id]:
-            raise LookupError("Unable to find requested nested hour Dict")
-            
+        # Check for the Date's availability Dict
+        if requested_time.date() not in datastore[agent_id]:
+            raise LookupError("Unable to find requested nested Date Dict")
 
-        min_available = datastore[agent_id][requested_time.hour][requested_time.minute]
+        # Check for the Hour's availability Dict
+        if requested_time.hour not in datastore[agent_id][requested_time.date()]:
+            raise LookupError("Unable to find requested nested Hour Dict")
+            
+        # Check for the Minutes's availability duratiion
+        if requested_time.minute not in datastore[agent_id][requested_time.date()][requested_time.hour]:
+            raise LookupError("Unable to find requested nested Minute Duration")
+
+        min_available = datastore[agent_id][requested_time.date()][requested_time.hour][requested_time.minute]
         is_available = min_available >= duration
         response = "Yes, that meeting time is available!" if is_available else "Sorry, that meeting time is no longer available."
 
