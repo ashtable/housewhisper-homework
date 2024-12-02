@@ -33,6 +33,30 @@
 
 `fastapi dev app/main.py`
 
+# Sample Data in *.ics files in the repo
+<img width="1194" alt="Screenshot 2024-12-02 at 12 27 43 PM" src="https://github.com/user-attachments/assets/7c96fe7b-a8d8-40fc-af0e-b2e02331f00c">
+
+
+# Sample Requests:
+
+## Check
+
+### Check if Agent Jane Doe (agent_id == 1) is available for 60 minutes on Dec. 2nd, 2024 at 8:00 am Pacific Time:
+
+`http://localhost:8000/check/1/60/2024-12-02T08:00:00-08:00`
+
+## Query
+
+### Query when Agent Jane Doe (agent_id == 1) is available for 60 minutes between Dec. 2nd, 2024 from 8-10 am Pacific Time:
+
+`http://localhost:8000/query/1/60/2024-12-02T08:00:00-08:00/2024-12-02T10:00:00-08:00`
+
+## Multi-Agent-Coordination
+
+### Query when Agents Jane Doe (agent_id == 1) and Jill Doe (agent_id == 2) are available for 60 minutes between Dec. 2nd, 2024 from 8-10 am Pacific Time:
+
+`http://localhost:8000/multi-agent-coordination/60/2024-12-02T08:00:00-08:00/2024-12-02T10:00:00-08:00?agent_ids=1&agent_ids=2`
+
 # Initial Design Diagrams
 
 ![HouseWhispser Homework Design - Page 1](https://github.com/user-attachments/assets/5ee978d4-e267-4f02-b284-c1e291e700d5)
