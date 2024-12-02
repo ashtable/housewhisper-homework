@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 
 from .utils import preprocess_ics_files
@@ -21,9 +22,25 @@ datastore = dict()
 app = FastAPI()
 
 
-@app.get("/query")
-async def query():
-    # Preprocess ICS files for query
-    datastore = preprocess_ics_files(CONFIG)
+@app.get("/query/{agent_id}/{duration}/{start_datetime_in_default_tz}")
+async def query(agent_id: int, duration: int, start_datetime_in_default_tz: datetime):
+    try:
+        requested_time = start_datetime_in_default_tz
 
-    return {"message": "Hello World"}
+        # Preprocess ICS files for query
+        datastore = preprocess_ics_files(CONFIG)
+
+        if agent_id not in datastore:
+            raise LookupError("Unable to find requested agent_id")
+        
+        if requested_time.hour not in datastore[agent_id]:
+            raise LookupError("Unable to find requested nested hour Dict")
+            
+
+        min_available = datastore[agent_id][requested_time.hour][requested_time.minute]
+        is_available = min_available >= duration
+        response = "Yes, that meeting time is available!" if is_available else "Sorry, that meeting time is no longer available."
+
+        return {"message": response}
+    except Exception as e:
+        return HTTPException(status_code=404, detail=str(e))

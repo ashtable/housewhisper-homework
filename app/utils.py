@@ -90,7 +90,9 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                     
             # Add a minute to the loop counter
             time_pointer += timedelta(minutes=1) 
-        
+
+    # Return the availability        
+    return availability_by_agent_id
 
 # Helper function to read an ICS file 
 # and return a sorted list of events
