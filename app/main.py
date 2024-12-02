@@ -1,8 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
+
+from .utils import read_ics_file_and_sort_events
+
+
+CONFIG = {
+    1: "agent_janedoe.ics", 
+    2: "agent_jilldoe.ics", 
+    3: "agent_joedoe.ics", 
+    4: "agent_johndoe.ics", 
+}
 
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
+@app.get("/query")
+async def query():
     return {"message": "Hello World"}
