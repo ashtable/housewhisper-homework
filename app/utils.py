@@ -38,6 +38,9 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
         # to build out our fast in-memory lookup
         time_pointer = PREPROCESS_START
         while time_pointer <= PREPROCESS_END:
+            # if time_pointer.date() == date(2024, 12, 6) and time_pointer.hour == 8:
+            #     foo = "bar"
+
             # Case 1: It's outside of the business day
             # 
             # Result - The agent is unavailable, so we'll store a value of 0 min duration
@@ -68,7 +71,18 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                     minutes_free = abs((time_pointer_date_at_5_pm - time_pointer).total_seconds() / 60)
                     store_duration_for_hour_and_min(availability_by_agent_id[k], minutes_free, time_pointer)
                 
-                # Case 5: The next_calendar_event has a begin datetime equal to time_pointer in terms of date/hour/minute or
+                
+                # Case 5: The next_calendar_event has a begin datetime before to time_pointer 
+                #         the next_calendar_event overlaps with time_pointer
+                #
+                # Result: The agent is unavailable at this time, so store a duration value of 0
+                elif (next_calendar_event is not None and (
+                    next_calendar_event["begin"] < time_pointer and next_calendar_event["end"] > time_pointer
+                )): 
+                    store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer)
+                
+
+                # Case 6: The next_calendar_event has a begin datetime equal to time_pointer in terms of date/hour/minute or
                 #         the prev_calendar_event is not None and overlaps with time_pointer
                 #
                 # Result: The agent is unavailable at this time, so store a duration value of 0
@@ -80,7 +94,7 @@ def preprocess_ics_files(ics_config: Dict[int, str]): # -> Dict[int, Dict[(date,
                     store_duration_for_hour_and_min(availability_by_agent_id[k], 0, time_pointer)
                     
 
-                # Case 6: The next_calendar_event has a begin datetime later than time_pointer, 
+                # Case 7: The next_calendar_event has a begin datetime later than time_pointer, 
                 #         but on the same date as time_pointer.
                 #
                 # Result: The agent is free for the number of minutes between now and next_calendar_event
