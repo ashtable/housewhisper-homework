@@ -1,33 +1,37 @@
 
 # tl;dr
 
-### Step 1) Clone this Repo
+### Step 0) Clone this Repo
 
 `git clone https://github.com/ashtable/housewhisper-homework.git`
 
-### Step 2) Change directories
+### Step 1) Change directories
 
 `cd housewhisper-homework`
 
-### Step 3) Ensure you're using Python 3.12+
+### Step 2) Ensure you're using Python 3.12+
 
 `python --version`
 
-### Step 4) Create a virtual environment
+### Step 3) Create a virtual environment
 
 `python3 -m venv .venv`
 
-### Step 5) Activate the virtual environment 
+### Step 4) Activate the virtual environment 
 
 `source .venv/bin/activate`
 
-### Step 6) Install dependencies
+### Step 5) Install dependencies
 
 `pip install -r requirements.txt`
 
+### Step 6) Run the test suite
+
+`pytest`
+
 ### Step 7) Run the web service in dev mode
 
-`fastapi dev main.py`
+`fastapi dev app/main.py`
 
 # Initial Design Diagrams
 
