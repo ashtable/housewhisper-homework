@@ -9,13 +9,13 @@
 
 `cd housewhisper-homework`
 
-### Step 3) Ensure you're using Python 3.11+
+### Step 3) Ensure you're using Python 3.12+
 
 `python --version`
 
 ### Step 4) Create a virtual environment
 
-`python -m venv .venv`
+`python3 -m venv .venv`
 
 ### Step 5) Activate the virtual environment 
 
@@ -27,7 +27,7 @@
 
 ### Step 7) Run the web service in dev mode
 
-`fastapi dev service.py`
+`fastapi dev main.py`
 
 # Initial Design Diagrams
 
