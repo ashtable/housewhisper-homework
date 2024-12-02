@@ -57,7 +57,7 @@ async def check(agent_id: int, duration: int, start_datetime_in_default_tz: date
 
 
 @app.get("/query/{agent_id}/{duration}/{time_range_start_datetime_in_default_tz}/{time_range_end_datetime_in_default_tz}")
-async def check(agent_id: int, duration: int, time_range_start_datetime_in_default_tz: datetime, time_range_end_datetime_in_default_tz: datetime):
+async def query(agent_id: int, duration: int, time_range_start_datetime_in_default_tz: datetime, time_range_end_datetime_in_default_tz: datetime):
 
     try:
         # Preprocess ICS files for query
