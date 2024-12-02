@@ -24,6 +24,6 @@ app = FastAPI()
 @app.get("/query")
 async def query():
     # Preprocess ICS files for query
-    datastore =  preprocess_ics_files(CONFIG)
+    datastore = preprocess_ics_files(CONFIG)
 
     return {"message": "Hello World"}
