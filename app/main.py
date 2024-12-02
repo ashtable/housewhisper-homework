@@ -1,18 +1,29 @@
 from fastapi import FastAPI, HTTPException
 
-from .utils import read_ics_file_and_sort_events
+from .utils import preprocess_ics_files
 
 
+# We'll create a default set of calendars 
+# for each of our agents that's mapped by 
+# agent_id to ICS filename
 CONFIG = {
-    1: "agent_janedoe.ics", 
-    2: "agent_jilldoe.ics", 
-    3: "agent_joedoe.ics", 
-    4: "agent_johndoe.ics", 
+    1: "janedoe.ics", 
+    2: "jilldoe.ics", 
+    3: "joedoe.ics", 
+    4: "johndoe.ics", 
 }
+
+# We'll create an in-memory, key-value 
+# datastore that we'll use to store the
+# results of preprocessing ICS files
+datastore = dict()
 
 app = FastAPI()
 
 
 @app.get("/query")
 async def query():
+    # Preprocess ICS files for query
+    datastore =  preprocess_ics_files(CONFIG)
+
     return {"message": "Hello World"}
